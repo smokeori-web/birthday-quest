@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birthday Quest ♡</title>
+<style>
+:root{
+  --pink:#ff9fc7; --pink2:#ffd7e8; --rose:#d95c96; --ink:#211b29;
+  --night:#11101a; --lav:#cbb7ff; --cream:#fff7fb; --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0f0e16;color:var(--ink)}
+body{overflow-x:hidden}
+button{font:inherit}
+#app{min-height:100vh;position:relative;overflow:hidden}
+.bg{position:fixed;inset:0;z-index:-2;background:
+ radial-gradient(circle at 15% 15%,rgba(255,159,199,.25),transparent 22%),
+ radial-gradient(circle at 85% 25%,rgba(203,183,255,.22),transparent 25%),
+ radial-gradient(circle at 55% 90%,rgba(255,215,232,.16),transparent 25%),
+ linear-gradient(145deg,#100e18,#1c1422 55%,#100e18)}
+.stars{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.8}
+.star{position:absolute;color:#ffd5e7;font-size:18px;animation:twinkle 2.8s infinite ease-in-out}
+@keyframes twinkle{50%{opacity:.25;transform:scale(.8) rotate(12deg)}}
+.screen{display:none;min-height:100vh;padding:38px 18px 50px;align-items:center;justify-content:center}
+.screen.active{display:flex;animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{width:min(960px,100%);background:rgba(255,247,251,.97);border:2px solid #ffb9d5;border-radius:28px;box-shadow:0 22px 70px rgba(0,0,0,.35);padding:30px;position:relative}
+.dark{background:rgba(20,17,28,.96);color:#fff;border-color:#6e587e}
+.center{text-align:center}
+.kicker{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);font-weight:800}
+.dark .kicker{color:#ff9fc7}
+h1,h2,h3{margin:.25em 0}
+h1{font-size:clamp(2.4rem,7vw,5.5rem);line-height:.9;letter-spacing:-.04em}
+h2{font-size:clamp(2rem,5vw,3.5rem)}
+p{line-height:1.65}
+.subtitle{font-size:1.05rem;opacity:.8}
+.btn{border:0;border-radius:999px;padding:13px 23px;background:linear-gradient(135deg,#ff9fc7,#ffd1e3);color:#381c2b;font-weight:850;cursor:pointer;box-shadow:0 8px 24px rgba(217,92,150,.22);transition:.2s}
+.btn:hover{transform:translateY(-2px) scale(1.02)}
+.btn.ghost{background:transparent;border:1px solid #e6a7c5;box-shadow:none}
+.dark .btn.ghost{color:#fff;border-color:#9b7cab}
+.bigbtn{font-size:1.1rem;padding:16px 34px}
+.pixel-title{font-family:monospace;letter-spacing:.04em;text-shadow:3px 3px 0 #8d4771}
+.decor{position:absolute;font-size:28px;pointer-events:none}
+.d1{top:18px;left:25px}.d2{top:25px;right:30px}.d3{bottom:20px;left:35px}.d4{bottom:28px;right:30px}
+.couple{display:flex;justify-content:center;gap:22px;align-items:end;margin:25px 0 8px}
+.avatar{width:170px;height:170px;border-radius:24px;image-rendering:pixelated;object-fit:cover;border:4px solid #ffb7d4;box-shadow:0 10px 25px rgba(0,0,0,.18)}
+.avatar.wife{border-color:#d9c7ff}
+.name-tag{font-weight:900;margin-top:7px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.card{padding:22px}.avatar{width:135px;height:135px}}
+.question{font-size:1.25rem;font-weight:800;margin:16px 0}
+.answers{display:grid;gap:10px}
+.answer{padding:14px 16px;border:2px solid #e8b0c9;background:#fff;border-radius:15px;text-align:left;cursor:pointer;font-weight:700}
+.answer:hover{background:#fff0f6}
+.answer.correct{border-color:#79b98b;background:#e9faee}
+.answer.wrong{border-color:#e77d9f;background:#ffe8f0;animation:shake .28s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.progress{height:8px;background:#f0dbe5;border-radius:99px;overflow:hidden;margin:12px 0 20px}.progress i{display:block;height:100%;background:linear-gradient(90deg,#ff86b9,#bca1ff);width:20%;transition:.4s}
+.memory{padding:18px;border-radius:20px;background:#fff;border:1px solid #efc0d4;min-height:150px;position:relative;overflow:hidden}
+.memory .emoji{font-size:34px}.memory h3{color:#a84a78}.memory p{margin-bottom:0}
+.heart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+@media(max-width:700px){.heart-grid{grid-template-columns:repeat(2,1fr)}}
+.heart{border:0;background:transparent;cursor:pointer;min-height:115px;position:relative}
+.heart:before{content:"♥";font-size:76px;color:#ff9fc7;text-shadow:0 7px 0 #e878a7;transition:.2s}
+.heart:hover:before{transform:scale(1.08);display:block}
+.heart span{position:absolute;inset:37px 8px auto;font-weight:900;font-size:.85rem;color:#6d2e4d}
+.modal{display:none;position:fixed;inset:0;background:rgba(10,8,15,.72);align-items:center;justify-content:center;padding:18px;z-index:20}
+.modal.show{display:flex}
+.modalbox{width:min(520px,100%);background:#fff6fa;border:2px solid #ffafd0;border-radius:25px;padding:28px;text-align:center;box-shadow:0 25px 80px #0008}
+.letter{background:#fff9fc;border:1px solid #efb9d0;border-radius:20px;padding:25px;line-height:1.85;box-shadow:inset 0 0 35px rgba(255,174,207,.12)}
+.song{display:flex;gap:18px;align-items:center;padding:17px;border-radius:18px;background:#17141f;border:1px solid #5d4a68;margin:12px 0}
+.note{font-size:2.4rem}
+.timeline{display:grid;gap:12px}
+.timeline .memory{padding-left:22px;border-left:6px solid #ff9fc7}
+.final-title{font-size:clamp(2.5rem,7vw,5rem)}
+.small{font-size:.88rem;opacity:.7}
+.footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.badge{display:inline-block;padding:6px 11px;border-radius:99px;background:#ffe0ec;color:#7a3154;font-weight:800;font-size:.8rem}
+.secret{margin-top:15px;padding:14px;border-radius:16px;background:#fff0f6;border:1px dashed #df82ad;display:none}
+.secret.show{display:block}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="bg"></div>
+<div class="stars" id="stars"></div>
+
+<section class="screen active" id="s1">
+  <div class="card dark center">
+    <span class="decor d1">♡</span><span class="decor d2">✦</span><span class="decor d3">☾</span><span class="decor d4">♡</span>
+    <div class="kicker">uma pequena aventura feita com amor</div>
+    <h1 class="pixel-title">BIRTHDAY<br>QUEST ♡</h1>
+    <p class="subtitle">para o meu baby, no dia dele.</p>
+    <div class="couple">
+      <div><img class="avatar" src="baby_pixel.png"><div class="name-tag">my baby ♡</div></div>
+      <div><img class="avatar wife" src="wife_pixel.png"><div class="name-tag">your wife ♡</div></div>
+    </div>
+    <p>Você está pronto para descobrir uma coisinha que eu fiz especialmente para você?</p>
+    <button class="btn bigbtn" onclick="go(2)">START ♡</button>
+    <p class="small">feito por sua baby / wife</p>
+  </div>
+</section>
+
+<section class="screen" id="s2">
+  <div class="card">
+    <span class="decor d1">♡</span><span class="decor d2">✦</span>
+    <div class="kicker">level 01</div><h2>Oi, amorzinho...</h2>
+    <p>Eu queria te dar alguma coisa que fosse só nossa. Como a gente ainda está à distância, fiz uma pequena jornada com as nossas memórias, as coisas que amo em você e um pedacinho do futuro que eu mais quero viver.</p>
+    <p><strong>Você foi meu “baby” primeiro</strong> — e de alguma forma esse apelido acabou virando uma das minhas formas favoritas de chamar você.</p>
+    <div class="couple">
+      <img class="avatar" src="baby_pixel.png"><img class="avatar wife" src="wife_pixel.png">
+    </div>
+    <div class="footer-actions"><button class="btn" onclick="go(3)">Vamos começar →</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s3">
+  <div class="card">
+    <div class="kicker">level 02 · quiz</div>
+    <h2>How well do you know us?</h2>
+    <div class="progress"><i id="bar"></i></div>
+    <div id="quiz"></div>
+    <div class="footer-actions"><button class="btn ghost" onclick="go(4)">Pular para as memórias</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s4">
+  <div class="card">
+    <div class="kicker">level 03 · nossas memórias</div><h2>Coisas que eu nunca quero esquecer ♡</h2>
+    <p>A gente pode não ter fotos juntos ainda, mas já tem momentos que eu guardo com muito carinho.</p>
+    <div class="timeline">
+      <div class="memory"><div class="emoji">🎮</div><h3>Nossa primeira call</h3><p>O dia em que jogamos CS juntos, só nós dois. Foi a primeira vez que tivemos aquele pedacinho de tempo que era só nosso.</p></div>
+      <div class="memory"><div class="emoji">🌙</div><h3>A primeira vez dormindo em call</h3><p>Uma coisa simples, mas tão íntima e confortável. Só ficar ali com você já fez a distância parecer um pouco menor.</p></div>
+      <div class="memory"><div class="emoji">🏠</div><h3>Quando você me apresentou à sua família</h3><p>Você me apresentar seu irmão e seu pai foi um daqueles momentos que fizeram eu perceber o quanto você me deixa entrar na sua vida.</p></div>
+      <div class="memory"><div class="emoji">🎮</div><h3>Onde tudo começou</h3><p>No Roblox, no MMV — um jogo que parecia só mais um jogo, até acabar colocando você na minha vida.</p></div>
+    </div>
+    <div class="footer-actions"><button class="btn" onclick="go(5)">Próxima fase →</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s5">
+  <div class="card center">
+    <div class="kicker">level 04 · desbloqueie</div><h2>Why I love you ♡</h2>
+    <p>Clique nos corações. Cada um esconde um motivo.</p>
+    <div class="heart-grid">
+      <button class="heart" onclick="heart('seu sorriso')"><span>sorriso</span></button>
+      <button class="heart" onclick="heart('seu cabelo')"><span>cabelo</span></button>
+      <button class="heart" onclick="heart('seus olhos')"><span>olhos</span></button>
+      <button class="heart" onclick="heart('suas piadas')"><span>piadas</span></button>
+      <button class="heart" onclick="heart('seu jeito comigo')"><span>seu jeito</span></button>
+      <button class="heart" onclick="heart('seu coração')"><span>coração</span></button>
+      <button class="heart" onclick="heart('seu jeito com seus amigos')"><span>seu jeitinho</span></button>
+      <button class="heart" onclick="heart('tudo em você')"><span>tudo</span></button>
+    </div>
+    <div id="heartCount" class="badge">0 / 8 descobertos</div>
+    <div class="footer-actions"><button class="btn" onclick="go(6)">Próxima fase →</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s6">
+  <div class="card dark">
+    <div class="kicker">level 05 · soundtrack</div><h2>Our songs ♫</h2>
+    <p>A gente ainda não tem uma música oficial, mas essas duas me fazem pensar em nós.</p>
+    <div class="song"><div class="note">♡</div><div><strong>Baby I'm Yours</strong><br><span class="small">Arctic Monkeys · a música que combina com esse “você é meu baby”.</span></div></div>
+    <div class="song"><div class="note">✦</div><div><strong>Ain't Nobody Else Like You</strong><br><span class="small">Mama Cass Elliot · porque, para mim, não existe ninguém que seja você.</span></div></div>
+    <p class="center">Não é só sobre as músicas. É sobre a sensação de lembrar de você quando elas tocam.</p>
+    <div class="footer-actions"><button class="btn" onclick="go(7)">Abrir minha carta →</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s7">
+  <div class="card">
+    <div class="kicker">level 06 · uma carta para você</div><h2>Meu amor,</h2>
+    <div class="letter">
+      <p>Feliz aniversário, meu amor. ♡</p>
+      <p>Eu queria conseguir colocar em palavras tudo o que você significa para mim, mas parece que “tudo” ainda seria pouco. Eu amo seu sorriso, seu cabelo, seus olhos, seu corpo, suas piadas e, principalmente, o jeito que você fala comigo e me faz sentir.</p>
+      <p>Eu amo como você consegue me fazer sentir amada mesmo quando está estressado. Amo o jeito que você trata as pessoas que ama, o jeito que fala com seus amigos e todos esses pequenos detalhes que fazem você ser exatamente você.</p>
+      <p>Desde que a gente se conheceu no MMV, eu não imaginava que aquele encontro no Roblox acabaria significando tanto para mim. E agora, mesmo com a distância, já temos nossas calls, nossas noites juntos e memórias que eu guardo com carinho.</p>
+      <p>Você me chama de <strong>my wife</strong>, e eu confesso que amo demais ser sua. ♡</p>
+      <p>Eu espero que esse novo ciclo seja lindo para você. E, principalmente, espero viver muitos dos próximos capítulos ao seu lado — inclusive o capítulo em que finalmente vou poder te conhecer pessoalmente.</p>
+      <p>Eu te amo, baby. Feliz aniversário. ♡</p>
+      <p style="text-align:right"><strong>— sua wife</strong></p>
+    </div>
+    <div class="footer-actions"><button class="btn" onclick="go(8)">Continuar →</button></div>
+  </div>
+</section>
+
+<section class="screen" id="s8">
+  <div class="card dark center">
+    <div class="kicker">quest complete</div>
+    <div class="final-title pixel-title">YOU COMPLETED<br>THE QUEST! ♡</div>
+    <p>Você chegou até o final, baby.</p>
+    <p>Mas tem uma última coisa...</p>
+    <button class="btn bigbtn" onclick="go(9)">OPEN YOUR GIFT 🎁</button>
+  </div>
+</section>
+
+<section class="screen" id="s9">
+  <div class="card center">
+    <div class="kicker">your gift</div>
+    <h2>O próximo capítulo é nosso. ♡</h2>
+    <div class="couple">
+      <img class="avatar" src="baby_pixel.png"><img class="avatar wife" src="wife_pixel.png">
+    </div>
+    <p>O meu presente não cabe em uma caixinha.</p>
+    <p><strong>É o dia em que a distância finalmente deixa de ser só uma tela.</strong></p>
+    <p>Um dia eu vou olhar para você pessoalmente, lembrar de todas essas calls, de quando nos conhecemos no MMV e pensar:</p>
+    <p style="font-size:1.25rem"><em>“Então era você. Meu baby.”</em> ♡</p>
+    <button class="btn bigbtn" onclick="go(10)">Mais uma coisinha... →</button>
+  </div>
+</section>
+
+<section class="screen" id="s10">
+  <div class="card dark center">
+    <div class="kicker">bonus message</div>
+    <h2>Para o meu amorzinho ♡</h2>
+    <p>Obrigada por existir, por me escolher e por fazer eu me sentir tão amada.</p>
+    <p>Que você nunca esqueça o quanto é especial para mim.</p>
+    <p style="font-size:2rem">I love you. ♡</p>
+    <div class="couple">
+      <div><img class="avatar" src="baby_pixel.png"></div>
+      <div><img class="avatar wife" src="wife_pixel.png"></div>
+    </div>
+    <p class="small">happy birthday, my baby · my love · my everything</p>
+    <div class="footer-actions">
+      <button class="btn" onclick="restart()">↻ jogar de novo</button>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+ <div class="modalbox">
+   <div style="font-size:3rem">♡</div>
+   <h3 id="modalTitle">um motivo</h3>
+   <p id="modalText"></p>
+   <button class="btn" onclick="closeModal()">fechar ♡</button>
+ </div>
+</div>
+
+<script>
+const screens=[...document.querySelectorAll('.screen')];
+let current=1, qIndex=0, hearts=0, discovered=new Set();
+const questions=[
+ {q:"Como a gente se conheceu?",a:["No Discord","No Roblox, no MMV","Na escola","No Instagram"],c:1},
+ {q:"Qual foi nossa primeira call só nós dois?",a:["Jogando CS","Assistindo filme","No Roblox","Em uma chamada de vídeo"],c:0},
+ {q:"Qual desses foi um momento marcante para mim?",a:["Você me apresentar seu irmão e seu pai","A gente ir ao cinema","Nossa primeira viagem","Nosso primeiro jantar"],c:0},
+ {q:"Qual apelido foi o primeiro que eu te dei?",a:["Neném","Amorzinho","Baby","Daddy"],c:2},
+ {q:"Como você me chama de um jeito que eu amo?",a:["My wife","Princess","Bestie","Sunshine"],c:0}
+];
+function go(n){
+ screens.forEach((s,i)=>s.classList.toggle('active',i===n-1));
+ current=n;
+ if(n===3) renderQuiz();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQuiz(){
+ const item=questions[qIndex];
+ document.getElementById('bar').style.width=((qIndex)/questions.length*100+20)+'%';
+ document.getElementById('quiz').innerHTML=
+ `<div class="small">pergunta ${qIndex+1} de ${questions.length}</div>
+  <div class="question">${item.q}</div>
+  <div class="answers">${item.a.map((x,i)=>`<button class="answer" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${x}</button>`).join('')}</div>`;
+}
+function answer(i){
+ const item=questions[qIndex], buttons=[...document.querySelectorAll('.answer')];
+ buttons[i].classList.add(i===item.c?'correct':'wrong');
+ if(i!==item.c){
+   setTimeout(()=>buttons[i].classList.remove('wrong'),500);
+   return;
+ }
+ setTimeout(()=>{
+   qIndex++;
+   if(qIndex>=questions.length){go(4);qIndex=0;}
+   else renderQuiz();
+ },550);
+}
+const reasons={
+ 'seu sorriso':"Porque seu sorriso consegue deixar qualquer conversa mais bonita. Eu simplesmente amo ver você sorrindo.",
+ 'seu cabelo':"Seu cabelo é um dos detalhes que eu acho mais lindos em você. ♡",
+ 'seus olhos':"Seus olhos são daqueles detalhes que eu poderia ficar olhando por muito tempo.",
+ 'suas piadas':"Até quando suas piadas são bobas, eu gosto porque são suas. 😭♡",
+ 'seu jeito comigo':"Eu amo o jeito que você fala comigo e como consegue me fazer sentir especial.",
+ 'seu coração':"Eu amo a forma como você trata quem ama e o carinho que existe por trás do seu jeito.",
+ 'seu jeito com seus amigos':"Eu amo ver quem você é com as pessoas que fazem parte da sua vida.",
+ 'tudo em você':"A resposta mais honesta: eu amo completamente tudo em você. ♡"
+};
+function heart(key){
+ discovered.add(key);
+ hearts=discovered.size;
+ document.getElementById('heartCount').textContent=hearts+' / 8 descobertos';
+ document.getElementById('modalTitle').textContent=key;
+ document.getElementById('modalText').textContent=reasons[key];
+ document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function restart(){qIndex=0;hearts=0;discovered.clear();go(1)}
+for(let i=0;i<36;i++){
+ const s=document.createElement('span');s.className='star';s.textContent=i%3===0?'✦':(i%3===1?'♡':'·');
+ s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*100)+'%';
+ s.style.animationDelay=(Math.random()*3)+'s';s.style.fontSize=(10+Math.random()*15)+'px';
+ document.getElementById('stars').appendChild(s);
+}
+</script>
+</div>
+</body>
+</html>
